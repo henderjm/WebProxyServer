@@ -6,8 +6,6 @@ public class UrlHandling {
 	
 	// no need for constructor
 	public UrlHandling(){
-//		this.blocked_urls[0] = "77.238.178.122"; // www.yahoo.com
-//		this.blocked_urls[1] = "91.198.174.225"; // www.wikipedia.org
 	}
 	
 	public void addUrl(String ip) {
