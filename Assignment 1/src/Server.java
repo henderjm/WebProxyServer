@@ -20,8 +20,7 @@ public class Server extends Thread {
 	@SuppressWarnings("restriction")
 	public static void main(String[] args) throws IOException {
 		// Server s = new Server(8080);
-		ManagementConsole mc = new ManagementConsole();
-		HttpServer hs = HttpServer.create(new InetSocketAddress(8080),2);
+		HttpServer hs = HttpServer.create(new InetSocketAddress(8080),0);
 		hs.createContext("/", new Handler());
 		System.out.println(hs.getAddress());
 		hs.setExecutor(Executors.newCachedThreadPool());
@@ -107,6 +106,8 @@ public class Server extends Thread {
 		private ManagementConsole mc = new ManagementConsole();
 		
 		public void handle(HttpExchange exchange) throws IOException {
+			s("... NEW REQUEST ...\n");
+			s(exchange.getLocalAddress() + " has connected to the server"+'\n');
 			String requestURL = "";
 			StringBuffer responseBuffer = new StringBuffer();
 //			responseBuffer
@@ -122,6 +123,7 @@ public class Server extends Thread {
 			List<String> b = reqHeaders.get("Host");
 			URL reqURL = new URL("http://".concat(b.toString().substring(1,
 					b.toString().length() - 1)));
+			s("Client requested url: " + reqURL.toString() +'\n');
 			System.out.println("URL to be checked: " + reqURL.toString());
 			// HttpURLConnection urlconn = (HttpURLConnection)
 			// reqURL.openConnection();
@@ -231,7 +233,13 @@ public class Server extends Thread {
 					mc.print_to_cache_screen("Website: "+ip+"/tStringbuffer length: "+responseBuffer.length());
 					input.close();
 				}
-				
+				Set<String> keySet = reqHeaders.keySet();
+				Iterator<String> it = keySet.iterator();
+				while(it.hasNext()) {
+					String h = it.next();
+					List<String> values = reqHeaders.get(h);
+					s("Request: " + h + " = " + values.toString() + "\n");
+				}
 				return_code = 200;
 				
 				// add cache name to GUI
@@ -242,15 +250,10 @@ public class Server extends Thread {
 			return return_code;
 		}
 		public boolean urlIsSafe(String url) {
-//			UrlHandling uh = new UrlHandling();
-//			String[] DataBase_BlockedUrls = uh.getBlockedUrls();
-//			for (int i = 0; i < DataBase_BlockedUrls.length; i++) {
-//				if (url.equals(DataBase_BlockedUrls[i]))
-//					return false;
-//			}
-//			
-			
 			return !mc.blockedIP(url);
+		}
+		private void s(String send) {
+			mc.print_to_log_screen(send);
 		}
 	}
 }

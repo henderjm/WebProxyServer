@@ -26,13 +26,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.BoxLayout;
 
 public class ManagementConsole extends JFrame {
 	JPanel mainPanel = new JPanel();
 	JTextArea blockedIP = new JTextArea();
-	JScrollPane scrollpane = new JScrollPane();
+	JScrollPane scrollPane = new JScrollPane();
 	DefaultListModel ipList, cacheList;
 	JList list_ip, list_cache;
+	JTextArea logTextArea = new JTextArea();
 	UrlHandling urlhandling = new UrlHandling();
 	public ManagementConsole() {
 		try {
@@ -47,12 +49,17 @@ public class ManagementConsole extends JFrame {
 		this.setTitle("Marks Management Console");
 		final JPanel CachePane = new JPanel();
 		CachePane.setVisible(false);
-		mainPanel.add(scrollpane);
+		final JPanel LogPane = new JPanel();
+		LogPane.setVisible(false);
+		//mainPanel.add(scrollpane);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		JMenu optionList = new JMenu("Admin");
 		menuBar.add(optionList);
-		
+		LogPane.setLayout(new BoxLayout(LogPane, BoxLayout.X_AXIS));
+		scrollPane.setViewportView(logTextArea);
+		LogPane.add(scrollPane);
+
 		JMenuItem cachedIP = new JMenuItem("View Cache");
 		cachedIP.setBackground(UIManager.getColor("MenuBar.selectionBackground"));
 		optionList.add(cachedIP);
@@ -61,9 +68,9 @@ public class ManagementConsole extends JFrame {
 
 		optionList.add(blockedList);
 		
-		JMenuItem Log = new JMenuItem("View Log");
-		Log.setBackground(UIManager.getColor("MenuBar.selectionBackground"));
-		optionList.add(Log);
+		JMenuItem ServerLog = new JMenuItem("View Log");
+		ServerLog.setBackground(UIManager.getColor("MenuBar.selectionBackground"));
+		optionList.add(ServerLog);
 //		this.getContentPane().add(blocked);
 		this.setVisible(true);
 		this.setSize(400, 500);
@@ -131,12 +138,21 @@ public class ManagementConsole extends JFrame {
 		 */
 		
 		getContentPane().add(CachePane, BorderLayout.NORTH);
+		
+		
+		getContentPane().add(LogPane, BorderLayout.SOUTH);
+		
+		
+		logTextArea.setBackground(new Color(0, 0, 0));
+		logTextArea.setForeground(new Color(0, 255, 0));
+//		LogPane.add(logTextArea);
 		blockedList.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				BlockedIpPane.setVisible(true);
 				CachePane.setVisible(false);
+				LogPane.setVisible(false);
 				
 			}
 			
@@ -145,10 +161,22 @@ public class ManagementConsole extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				BlockedIpPane.setVisible(false);
+				LogPane.setVisible(false);
 				CachePane.setVisible(true);	
 			}
 			
 		});
+		ServerLog.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				BlockedIpPane.setVisible(false);
+				CachePane.setVisible(false);
+				LogPane.setVisible(true);				
+			}
+			
+		});
+		
 		this.validate();
 	}
 	public void print_message_window(JTextArea ta, String message){
@@ -164,5 +192,8 @@ public class ManagementConsole extends JFrame {
 	public void print_to_cache_screen(String s) {
 		cacheList.addElement(s);
 		
+	}
+	public void print_to_log_screen(String s) {
+		logTextArea.append(s);
 	}
 }
